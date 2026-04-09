@@ -1,0 +1,39 @@
+1. Describa paso a paso qué ocurre en su aplicación cuando el usuario
+guarda un contacto.
+(Debe mencionar clases o componentes utilizados)
+
+al dar en el botón guardar Se activa el OnClickListener del FloatingActionButton en la clase AddEditFragment.
+
+Tambien se ejecuta el metodo validate, que normaliza el teléfono eliminando espacios y guiones, y verifica que el nombre no esté vacío, el email sea válido y el código postal tenga 5 dígitos.
+
+Si la validacion pasa, se crea un objeto ContentValues donde se guardan todos los valores de los imputs incluyendo el telefono normalizado
+
+cuando se guarda, se invoca a listener.onAddEditComplete(contactUri). para volver a la interfaz principal	
+La clase MainActivity tiene popBackStack() que sirve para cerrar el fragmento de edicion y llama a contactsFragment.updateContractList() para refrescar la interfazz.
+
+2. Indique cómo se almacenan los datos del contacto en su aplicación.
+(Mencione los componentes utilizados)
+
+Se utiliza un ContentProvider que esta referenciado a través de DatabaseDescription.Contact.CONTENT_URI Este actia como una base de datos sqllite
+
+Se usa la clase ContentValues para mapear los nombres de las columnas de la base de datos con los valores ingresados por el usuario
+
+El ContentResolver de la actividad que se encarga de ejecutar los insert o update
+
+3. Explique cómo se realiza la navegación entre pantallas o fragments en su
+aplicación.
+
+Interfaces de comunicacion: Los fragmentos ContactsFragment, DetailFragment, AddEditFragment definen interfaces La clase MainActivity las implementa todas.
+
+Cuando ocurre un evento el fragmento avisa a la actividad mediante el listener. La actividad entonces ejecuta un FragmentTransaction usando el metodo .replace.
+
+Pila de retroceso: Se utiliza .addToBackStack(null) en las transacciones para que, cuando el usuario presione el botón "atrás", el FragmentManager pueda volver al fragmento anterior en lugar de cerrar la app.
+
+La navegación detecta si existe un fragmentContainer (celular) o un rightPaneContainer para decidir si reemplaza la pantalla completa o solo el panel derecho
+
+4. Mencione un problema que podría ocurrir si una operación costosa se
+ejecuta en la interfaz (UI) y explique por qué.
+
+El problema principal es el ANR o el "congelamiento" de la app.
+
+ocurre porque en android, la UI corre en un solo hilo principal. Si ejecutas una operación costosa (como una consulta pesada a una base de datos o una descarga de internet) en este hilo, este se bloquea y no puede atender los eventos del usuario ni redibujar la interfaz

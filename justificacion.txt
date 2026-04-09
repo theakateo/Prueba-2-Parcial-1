@@ -1,0 +1,28 @@
+1. Dónde realizó los cambios
+
+En el método validate(): Para la logica de comprobación antes de intentar guardar.
+
+En el método saveContact(): Para la preparación de los datos que se envían al ContentResolver.
+
+2. Por qué eligió ese lugar
+Se eligió este fragmento porque es el encargado de gestionar el formulario de entrada
+
+validate(): Al normalizar aquí, permitimos que la validación de la expresión regular \\d{10} sea precisa, sin importar el formato
+
+saveContact(): Realizar la limpieza aquí garantiza que el ContentValues solo contenga dígitos, cumpliendo con la regla de que el valor guardado no debe contener caracteres especiales.
+
+3. Qué problemas encontró
+
+La máscara de validación original fallaba cuando el usuario ingresaba un número con formato humano ya que la longitud del String superaba los 10 caracteres y contenía símbolos no numéricos.
+
+Una validación directa impedía al usuario usar separadores lo cual empeoraba la experiencia de usuario
+
+ Se debía validar y guardar el dato limpio sin necesariamente borrar los guiones que el usuario estaba escribiendo en tiempo real en el TextInputLayout
+
+4. Cómo los resolvió
+
+ Se implementó el método replaceAll("[\\s-]", ""). Esta expresión busca cualquier espacio en blanco (\\s) o guion (-) y los reemplaza por una cadena vacía.
+
+En validate(), se extrajo el texto, se normalizó en una variable local y se validó esa variable. Así, el error solo se muestra si, tras quitar los símbolos, no hay exactamente 10 dígitos.
+
+En saveContact(), se aplicó la misma limpieza antes de hacer el put en el objeto ContentValues. Esto asegura que el ContentProvider reciba una cadena puramente numérica, facilitando búsquedas futuras y manteniendo la integridad de la base de datos.
